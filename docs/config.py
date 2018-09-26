@@ -8,7 +8,14 @@ SITE_PATH = os.path.join(
     SITE_NAME
 )
 SERVER_NAME = os.environ.get('DOCS_SERVER_NAME')
-ARXIV_URLS = {}
+
+EXTERNAL_URL_SCHEME = os.environ.get('EXTERNAL_URL_SCHEME', 'https')
+BASE_SERVER = os.environ.get('BASE_SERVER', 'arxiv.org')
+URLS = [
+    ("login", "/login", BASE_SERVER),
+    ("logout", "/logout", BASE_SERVER),
+]
+
 LOGLEVEL = os.environ.get('LOGLEVEL', 10)
 
 

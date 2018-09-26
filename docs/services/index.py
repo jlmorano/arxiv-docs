@@ -153,6 +153,7 @@ def get_by_path(path: str, get_parents: bool = True,
     -------
     :class:`.Page`
     """
+    logger.debug('Get page by path at %s', path)
     idx = _get_index(_get_index_path())
     with idx.searcher() as searcher:
         result = searcher.document(path=path)
@@ -268,8 +269,23 @@ def find(query: str) -> SearchResults:
 
 
 def _get_parents(result: dict) -> List[Page]:
-    return [get_by_path('/'.join(result['parents'][:i+1]), False, False)
-            for i in range(len(result['parents']))]
+    _parents = []
+    for i in range(len(result['parents'])):
+        parent_ref = '/'.join(result['parents'][:i+1])
+        try:
+            _parents.append(
+                get_by_path(parent_ref, False, False)
+            )
+        except PageDoesNotExist:
+            _parents.append(
+                Page(
+                    title=parent_ref.title(),
+                    path=parent_ref,
+                    content_path='',
+                    slug=''
+                )
+            )
+    return _parents
 
 
 def _get_children(result: dict) -> List[Page]:
