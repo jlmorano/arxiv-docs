@@ -1,17 +1,17 @@
+---
+title: arXiv.org SWORD/APP Deposit API User's Manual
+---
+
 arXiv.org SWORD/APP Deposit API User's Manual
 =============================================
 
-Table of Contents
-
-**JavaScript must be enabled in your browser to display the table of
-contents.**
 
 1. Preface [Preface]
 ----------
 
 The arXiv **SWORD Deposit API** allows programmatic submission of
 material for ingestion into the arXiv database hosted at
-[arXiv.org](http://arxiv.org/).
+[arXiv.org](https://arxiv.org/).
 
 [SWORD](http://www.swordapp.org/) defines a web service for repository
 deposit based on the Atom Publishing Protocol (**APP**),
@@ -232,7 +232,7 @@ to
     Expires: Sat, 26 Apr 2008 22:15:08 GMT
 
 and the general structure of the returned servicedocument is
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <service xmlns="http://www.w3.org/2007/app"
              xmlns:atom="http://www.w3.org/2005/Atom"
@@ -251,7 +251,7 @@ and the general structure of the returned servicedocument is
         ...
       </workspace>
     </service>
-
+```
 The servicedocument specifies the capabilities of arXiv’s SWORD
 implementation, e.g. the maximal allowed size of uploads in kB
 (*\<sword:maxUploadSize\>*), and enumerates the collections for which
@@ -304,7 +304,7 @@ servicedocument.
 
 For example, the servicedocument lists the following choice of
 primary\_categories for the *Statistics collection*:
-
+```xml
         <collection href="https://arxiv.org/sword-app/stat-collection">
           <atom:title>The Statistics archive</atom:title>
           ....
@@ -322,7 +322,7 @@ primary\_categories for the *Statistics collection*:
           </arxiv:primary_categories>
           ...
         </collection>
-
+```
 and a deposit to */sword-app/stat-collection* must contain **exactly
 one** of these.
 
@@ -404,7 +404,7 @@ media link entry (identifier replaced with ellipsis)
 
 The response content is the associated media link entry created in the
 author’s workspace at arXiv.
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <entry xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/">
       <author>
@@ -427,7 +427,7 @@ author’s workspace at arXiv.
       <link rel="edit-media" href="https://arxiv.org/sword-app/edit/........"/>
       <link rel="edit" href="https://arxiv.org/sword-app/edit/.........atom"/>
     </entry>
-
+```
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -453,7 +453,7 @@ Precondition Failed** and a SWORD \<sword:error\> entry with attribute
 
 and a corresponding atom entry with human readable [error
 message](#Errors)
-
+```xml
     ?xml version="1.0" encoding="utf-8"?>
     <sword:error xmlns="http://www.w3.org/2005/Atom"
            xmlns:sword="http://purl.org/net/sword/"
@@ -474,14 +474,14 @@ message](#Errors)
       <arxiv:errorcode>1048576</arxiv:errorcode>
       <summary>MD5 sum did not match</summary>
     </sword:error>
-
+```
 An accepted media deposit is held in the user’s workspace until further
 processing. arXiv returns the media link entry created for the deposited
 media. The entry has a link of *rel=“edit-media*”, which will be used to
 reference the deposited material.
 
 The Perl script
-[media-deposit.pl](http://arxiv.org/sword/media-deposit.pl) demonstrates
+[media-deposit.pl](/help/submit_sword/media-deposit.pl) demonstrates
 how individual files can be deposited in the user’s SWORD/APP workspace
 at arXiv. The simplest invocation is
 
@@ -622,7 +622,7 @@ physics collection
     User-Agent: arXiv SWORD demo 1.1
     Content-Type: application/atom+xml;type=entry
     Authorization: Basic .......................=
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <entry xmlns="http://www.w3.org/2005/Atom">
       <title>A strangely unique title</title>
@@ -656,7 +656,7 @@ physics collection
                 term="http://arxiv.org/terms/arXiv/physics.class-ph"/>
       <link href="https://arxiv.org/sword-app/edit/........" type="application/pdf" rel="related"/>
     </entry>
-
+```
 If this is successful the server response is **202 Accepted**
 
     HTTP/1.1 202 Accepted
@@ -671,7 +671,7 @@ a contact email for at least one of the authors of the contribution,
 etc..
 
 The returned atom entry confirms the acceptance
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <entry xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/">
       <author>
@@ -697,7 +697,7 @@ The returned atom entry confirms the acceptance
       <link rel="edit" href="https://arxiv.org/sword-app/edit/.........atom"/>
       <link rel="alternate" href="http://arxiv.org/resolve/app/........"/>
     </entry>
-
+```
 and contains an “alternate” link, which can be used to look up the
 permanent arXiv identifier which will be assigned to this submission
 upon release.
@@ -736,7 +736,7 @@ When applicable the email contains the permanent arXiv identifier and
 paper password. It is important that the author/submitter closely
 inspect the representation of the submission at arXiv and take
 corrective action where necessary, see
-[checking](http://arxiv.org/help/submit#read).
+[checking](/help/submit#read).
 
 The status of a SWORD deposit may be tracked using the tracking URI
 returned in the Atom \<link\> element with ***rel="alternate"***, for
@@ -747,22 +747,22 @@ example:
 The response to *GET* <http://arxiv.org/resolve/app/10030146> will be a
 short XML report on the status of this SWORD submission in the arXiv
 workflow. An example initial response is:
-
+```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <deposit>
      <tracking_id>http://arxiv.org/resolve/app/10030146</tracking_id>
      <status>submitted</status>
     </deposit>
-
+```
 An example after publication is:
-
+```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <deposit>
      <tracking_id>http://arxiv.org/resolve/app/10030146</tracking_id>
      <status>published</status>
      <arxiv_id>1003.9876</arxiv_id>
     </deposit>
-
+```
 The root element will always be ***\<deposit\>*** and will always
 contain a ***\<status\>*** element which contains one of the following:
 
@@ -791,11 +791,11 @@ Status Values
 --------------
 
 arXiv’ed papers can be updated or replaced. The rules for a
-[replacement](http://arxiv.org/help/replace) via the web interface also
+[replacement](/help/replace) via the web interface also
 apply to a replacement using SWORD. In particular a new version number
 will be assigned unless it is a [same day
-replacement](http://arxiv.org/help/replace#sameday), and all [previously
-published versions](http://arxiv.org/help/replace#versions) remain
+replacement](/help/replace#sameday), and all [previously
+published versions](/help/replace#versions) remain
 accessible.
 
 For a replacement of a previously created resource via SWORD/APP arXiv
@@ -807,7 +807,7 @@ and specifically [RFC5023 section
 metadata wrapper of the original deposit.
 
 A replacement via SWORD can only be made by a registered [paper
-owner](http://arxiv.org/help/authority) or the author of the original
+owner](/help/authority) or the author of the original
 SWORD deposit when authenticated with the same credentials. There are no
 per paper passwords for replacements via SWORD.
 
@@ -978,7 +978,7 @@ will produce
     Content-Type: application/atom+xml;type=entry
 
 and the response content is
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <sword:error xmlns="http://www.w3.org/2005/Atom"
             xmlns:sword="http://purl.org/net/sword/"
@@ -1000,13 +1000,13 @@ and the response content is
       <arxiv:errorcode>16</arxiv:errorcode>
       <summary>invalid collection: foobar</summary>
     </sword:error>
-
+```
 8. A Complete Example [Example]
 ---------------------
 
 As a practical example, we demonstrate what the submission of an
 existing article,
-[arXiv:hep-th/0605021](http://arxiv.org/abs/hep-th/0605021) via
+[arXiv:hep-th/0605021](/abs/hep-th/0605021) via
 SWORD/APP would look like.
 
 The article consists of 3 individual files, a TeX source file and 2
@@ -1031,7 +1031,7 @@ The response status and reference link are displayed
                     https://arxiv.org/sword-app/edit/08050001
 
 and the full atom entry returned by the server is:
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <entry xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/">
       <author>
@@ -1055,7 +1055,7 @@ and the full atom entry returned by the server is:
       <link rel="edit-media" href="https://arxiv.org/sword-app/edit/08050001"/>
       <link rel="edit" href="https://arxiv.org/sword-app/edit/08050001.atom"/>
     </entry>
-
+```
 Next comes preparation and POST-ing of the metadata wrapper.
 
 To capture the rich metadata of this article to full extent, the wrapper
@@ -1070,7 +1070,7 @@ In this case there is only one media entry to reference via the
 
 namely the zip file previously deposited and referenced via the URI
 *https://arxiv.org/sword-app/edit/08050001*
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <entry xmlns="http://www.w3.org/2005/Atom">
       <title>Superconformal Symmetry in Linear Sigma Model on Supermanifolds</title>
@@ -1115,7 +1115,7 @@ namely the zip file previously deposited and referenced via the URI
       <arxiv:doi xmlns:arxiv="http://arxiv.org/schemas/atom/">10.1016/j.nuclphysb.2006.07.013</arxiv:doi>
       <link href="https://arxiv.org/sword-app/edit/08050001" type="application/zip" rel="related"/>
     </entry>
-
+```
 <table>
 <colgroup>
 <col style="width: 50%" />
@@ -1145,7 +1145,7 @@ The important pieces of the response are:
             http://arxiv.org/resolve/app/08050007
 
 The full atom entry response is
-
+```xml
     <?xml version="1.0" encoding="utf-8"?>
     <entry xmlns="http://www.w3.org/2005/Atom" xmlns:sword="http://purl.org/net/sword/">
       <author>
@@ -1175,7 +1175,7 @@ The full atom entry response is
       <link rel="edit" href="https://arxiv.org/sword-app/edit/08050007.atom"/>
       <link rel="alternate" href="http://arxiv.org/resolve/app/08050007"/>
     </entry>
-
+```
 This completes the SWORD/APP process. The submission is now being
 processed by arXiv, and assuming it passes all internal checks and is
 approved by moderators, it will be entered into the arXiv database.
@@ -1192,7 +1192,7 @@ submission.
 9. Questions, Concerns, Suggestions [Questions]
 -----------------------------------
 
-Please [contact](http://arxiv.org/help/contact) arXiv with any questions
+Please [contact](/help/contact) arXiv with any questions
 or suggestions.
 
 The SWORD interface is currently in beta and there is certainly room for
